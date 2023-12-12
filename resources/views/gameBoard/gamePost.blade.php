@@ -8,6 +8,18 @@
         <a href="{{ route('gameBoard.create') }}">게임 리뷰 작성하기</a>
       </x-primary-button>
     </div>
+    <style>
+      /* 스타일 */
+      .star {
+        font-size: 2em;
+        cursor: pointer;
+        transition: color 0.5s;
+      }
+
+      .star.rated {
+        color: orange;
+      }
+    </style>
   </x-slot>
 
   <div class="py-12">
@@ -26,10 +38,9 @@
                     @foreach ($gamePosts as $gamePost)
                     <div class="bg-gray-200 p-4 rounded-lg">
                       <div class="flex justify-between">
-                        <a href="{{ route('gameBoard.show', ['gameBoard' => $gamePost->id]) }}">
-                          <h2 class="text-2xl font-semibold mb-2">
-                            {{$gamePost->title}}
-                          </h2>
+                        <a class="flex-1 mr-4 truncate text-2xl font-semibold mb-2"
+                          href="{{ route('gameBoard.show', ['gameBoard' => $gamePost->id]) }}">
+                          {{$gamePost->title}}
                         </a>
                         {{-- 게시물 삭제 버튼 --}}
                         @if($gamePost->user_id === Auth::user()->id)
@@ -54,9 +65,17 @@
                           class="w-full h-40 object-contain rounded-lg mb-2">
                         @endif
                         <p class="text-gray-700 mb-2">
-                          {{$gamePost->user->user_id}}
+                          작성자: {{$gamePost->user->user_id}}
                         </p>
-
+                        @if($gamePost->updated_at == $gamePost->created_at)
+                        <p class="text-gray-700">
+                          작성 시간: {{$gamePost->created_at}}
+                        </p>
+                        @else
+                        <p class="text-gray-700">
+                          수정 시간: {{$gamePost->updated_at}} (수정됨)
+                        </p>
+                        @endif
                       </a>
                     </div>
                     @endforeach

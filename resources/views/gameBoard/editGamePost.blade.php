@@ -1,7 +1,7 @@
 <x-app-layout>
   <x-slot name="header">
     <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-      게임 리뷰 작성하기
+      게임 리뷰 수정하기
     </h2>
     <style>
       /* 스타일 */
@@ -20,10 +20,10 @@
   <div class="py-12">
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
       <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-        <form id="gameForm" action="{{ route('gameBoard.store') }}" enctype="multipart/form-data" method="POST"
-          class="p-6 space-y-6 ">
+        <form id="gameForm" action="{{ route('gameBoard.update', ['gameBoard' => $gamePost->id]) }}"
+          enctype="multipart/form-data" method="POST" class="p-6 space-y-6 ">
           @csrf
-
+          @method('PUT')
           <div class="flex justify-between items-center mb-4">
             <div class="w-1/2 pr-4 flex items-center">
               <label for="category" class="block text-gray-700 text-xl font-bold mr-2 whitespace-nowrap">게임
@@ -31,7 +31,9 @@
               <select id="category" name="category"
                 class='border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md overflow-hidden shadow-sm w-full'>
                 @foreach($categories as $category)
-                <option value="{{ $category->id }}">{{ $category->name }}</option>
+                <option value="{{ $category->id }}" {{ $gamePost->categories_id === $category->id ? 'selected' : ''}}
+                  >{{
+                  $category->name }}</option>
                 @endforeach
               </select>
             </div>
@@ -41,17 +43,18 @@
                 난이도</label>
               <select id="difficulty" name="difficulty"
                 class='border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md overflow-hidden shadow-sm w-full'>
-                <option value="매우 쉬움">매우 쉬움</option>
-                <option value="쉬움">쉬움</option>
-                <option value="보통">보통</option>
-                <option value="어려움">어려움</option>
-                <option value="매우 어려움">매우 어려움</option>
+                <option value="매우 쉬움" {{ $gamePost->difficulty === '매우 쉬움' ? 'selected' : '' }}>매우 쉬움</option>
+                <option value="쉬움" {{ $gamePost->difficulty === '쉬움' ? 'selected' : '' }}>쉬움</option>
+                <option value="보통" {{ $gamePost->difficulty === '보통' ? 'selected' : '' }}>보통</option>
+                <option value="어려움" {{ $gamePost->difficulty === '어려움' ? 'selected' : '' }}>어려움</option>
+                <option value="매우 어려움" {{ $gamePost->difficulty === '매우 어려움' ? 'selected' : '' }}>매우 어려움</option>
               </select>
             </div>
           </div>
           <div>
             <label for="game_title" class='block font-bold text-xl text-gray-700'>제목</label>
             <input id="game_title" name="game_title" type="text" cols="20" maxlength="20" rows="1"
+              value="{{ $gamePost->title }}"
               class='border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md overflow-hidden shadow-sm w-full resize-none'
               required autofocus autocomplete="off">
             <p id="gameTitleError" class='text-sm hidden text-red-600 space-y-1'>글자수는 20자를 넘을 수
@@ -62,7 +65,7 @@
             <label for="review_content" class="block text-gray-700 text-xl font-bold mb-2 ">리뷰 내용</label>
             <textarea id="review_content" name="review_content" oninput="autoResize(this)" rows="1"
               class='border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md overflow-hidden shadow-sm w-full resize-none'
-              required></textarea>
+              required>{{ $gamePost->content }}</textarea>
           </div>
 
           <div class="mb-4">
@@ -85,22 +88,23 @@
           </div>
 
           <div class="flex items-baseline">
-            <div class="rating-value text-gray-700 text-xl font-bold ">평점: 0/5</div>
-            <input type="hidden" id="selectedRating" name="selectedRating" value="0">
+            <div class="rating-value text-gray-700 text-xl font-bold ">평점: {{$gamePost->rating}}/5</div>
+            <input type="hidden" id="selectedRating" name="selectedRating" value="{{ $gamePost->rating }}">
             <div class="star-rating flex ml-2">
-              <span class="star" data-rating="1" value="1">&#9733;</span>
-              <span class="star" data-rating="2" value="2">&#9733;</span>
-              <span class="star" data-rating="3" value="3">&#9733;</span>
-              <span class="star" data-rating="4" value="4">&#9733;</span>
-              <span class="star" data-rating="5" value="5">&#9733;</span>
+              @for ($i = 1; $i <= 5; $i++) @if ($i <=$gamePost->rating)
+                <span class="star rated" data-rating="{{ $i }}" value="{{ $i }}">&#9733;</span>
+                @else
+                <span class="star" data-rating="{{ $i }}" value="{{ $i }}">&#9733;</span>
+                @endif
+                @endfor
             </div>
           </div>
           <div class="flex justify-end">
             <x-href-button class="mr-2" href="{{ route('gameBoard.index')}}">취소</x-href-button>
-            <x-primary-button type="submit">리뷰 작성 완료</x-primary-button>
+            <x-primary-button type="submit">수정 완료</x-primary-button>
           </div>
-
         </form>
+
       </div>
     </div>
   </div>
@@ -138,8 +142,6 @@
     const selectedRating = document.getElementById('selectedRating').value;
     if (selectedRating === "0") {
       e.preventDefault(); // 폼 제출 막기
-
-      // 경고 메시지를 사용자에게 표시
       alert('평점을 선택해주세요.');
     } 
   });

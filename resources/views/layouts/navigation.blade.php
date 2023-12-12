@@ -18,7 +18,7 @@
         </div>
         <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
           <x-nav-link :href="route('gameBoard.index')" :active="request()->routeIs('gameBoard.index')">
-            자유게시판
+            게임 리뷰 게시판
           </x-nav-link>
         </div>
       </div>

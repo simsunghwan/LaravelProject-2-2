@@ -73,6 +73,10 @@ class GameBoardController extends Controller
   public function edit(string $id)
   {
     //
+    $gamePost = GamePost::findOrFail($id);
+    $categories = Category::all();
+
+    return view('gameBoard.editGamePost', ['gamePost' => $gamePost, 'categories' => $categories]);
   }
 
   /**
@@ -81,6 +85,31 @@ class GameBoardController extends Controller
   public function update(Request $request, string $id)
   {
     //
+    $post = GamePost::findOrFail($id);
+
+    // 변경된 데이터를 요청에서 가져옴
+
+    $post->title = $request->input('game_title');            // 제목
+    $post->content = $request->input('review_content');       // 내용
+    $post->user_id = auth()->user()->id;                      // 현재 인증된 사용자의 ID
+    $post->categories_id = $request->input('category');       // 카테고리 항목
+    $post->rating = $request->input('selectedRating');        // 평점
+    $post->difficulty = $request->input('difficulty');
+
+
+    $imagePath = null;
+    if ($request->hasFile('game_image')) {
+      $imagePath = $request->file('game_image')->store('images', 'public');
+      $post->img_path = $imagePath;
+    }
+
+
+    // 변경사항이 있는 경우에만 저장
+    if ($post->isDirty()) {
+      $post->save();
+      // 변경사항이 있을 때의 추가적인 로직 수행
+    }
+    return redirect()->route('gameBoard.show', $id);
   }
 
   /**
