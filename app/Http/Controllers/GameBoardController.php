@@ -17,7 +17,7 @@ class GameBoardController extends Controller
   public function index()
   {
     // 
-    $gamePosts = GamePost::paginate(9);
+    $gamePosts = GamePost::orderBy('created_at', 'desc')->paginate(9);
 
     return view('gameBoard.gamePost', ['gamePosts' => $gamePosts]);
   }
