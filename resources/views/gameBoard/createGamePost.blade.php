@@ -138,8 +138,6 @@
     const selectedRating = document.getElementById('selectedRating').value;
     if (selectedRating === "0") {
       e.preventDefault(); // 폼 제출 막기
-
-      // 경고 메시지를 사용자에게 표시
       alert('평점을 선택해주세요.');
     } 
   });
@@ -262,30 +260,4 @@
 
 
 
-</script>
-
-<script>
-  const loadResize = (contentInput) => {
-    contentInput.style.height = "0px";
-    
-    let scrollHeight = contentInput.scrollHeight;
-    let style = window.getComputedStyle(contentInput);
-    let borderTop = parseInt(style.borderTop);
-    let borderBottom = parseInt(style.borderBottom);
-    
-    contentInput.style.height = (scrollHeight + borderTop + borderBottom) + "px";
-  }
-  
-  window.addEventListener("load", () => {
-    const allCommentTextareas = document.querySelectorAll('.review_content');
-    allCommentTextareas.forEach((textarea) => {
-      loadResize(textarea); 
-    });
-  });
-  window.onresize = () => {
-    const allCommentTextareas = document.querySelectorAll('.review_content');
-    allCommentTextareas.forEach((textarea) => {
-      loadResize(textarea);
-    });
-  };
 </script>

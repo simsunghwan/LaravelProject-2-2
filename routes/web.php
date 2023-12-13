@@ -18,12 +18,12 @@ Route::get('/', function () {
   return view('welcome');
 });
 
-Route::get('/dashboard', function () {
-  return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::resource('/gameBoard', \App\Http\Controllers\GameBoardController::class)->middleware(['auth', 'verified']);
+Route::get('/dashboard', [\App\Http\Controllers\GameBoardController::class, 'dashboard'])->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/search', [\App\Http\Controllers\GameBoardController::class, 'search'])->middleware(['auth', 'verified'])->name('search');
 
+Route::resource('/gameBoard.comment', \App\Http\Controllers\CommentController::class)->only('store', 'update', 'destroy')->middleware(['auth', 'verified']);
 
 Route::middleware('auth')->group(function () {
   Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

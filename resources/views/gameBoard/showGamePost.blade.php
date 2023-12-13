@@ -70,11 +70,12 @@
         <div class="flex justify-between mt-3">
           <x-href-button class="mr-2" href="{{ route('gameBoard.index')}}">돌아가기</x-href-button>
           <div class="flex">
-            @if($gamePost->user_id === Auth::user()->id)
-            <form action="{{ route('gameBoard.destroy', ['gameBoard' => $gamePost->id]) }}" method="POST">
+            @if($gamePost->user_id === Auth::user()->id || Auth::user()->is_admin === 1)
+            <form id="deleteForm" action="{{ route('gameBoard.destroy', ['gameBoard' => $gamePost->id]) }}"
+              method="POST">
               @csrf
               @method('DELETE')
-              <x-danger-button class="mr-2">
+              <x-danger-button class="mr-2" onclick="confirmDelete(event)">
                 삭제
               </x-danger-button>
             </form>
@@ -85,5 +86,12 @@
       </div>
     </div>
   </div>
-  @include('gameBoard.comment')
+  @include('gameBoard.comment', ['gamePost' => $gamePost])
 </x-app-layout>
+
+{{-- 세션에 저장된 알림 메시지가 있는지 확인하고 있다면 alert을 표시합니다. --}}
+<script>
+  @if(Session::has('alert'))
+    alert('{{ Session::get('alert') }}');
+  @endif
+</script>

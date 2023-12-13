@@ -101,7 +101,7 @@
           </div>
           <div class="flex justify-end">
             <x-href-button class="mr-2" href="{{ route('gameBoard.index')}}">취소</x-href-button>
-            <x-primary-button type="submit">수정 완료</x-primary-button>
+            <x-primary-button>수정 완료</x-primary-button>
           </div>
         </form>
 

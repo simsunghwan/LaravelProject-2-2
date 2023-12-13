@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\GamePost;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
+
 
 class GameBoardController extends Controller
 {
@@ -15,10 +17,26 @@ class GameBoardController extends Controller
   public function index()
   {
     // 
-    $gamePosts = GamePost::all();
-    $count = $gamePosts->count();
-    return view('gameBoard.gamePost', ['gamePosts' => $gamePosts, 'count' => $count]);
+    $gamePosts = GamePost::paginate(9);
+
+    return view('gameBoard.gamePost', ['gamePosts' => $gamePosts]);
   }
+  public function dashboard()
+  {
+    $categories = Category::all();
+    return view('dashboard', ['categories' => $categories]);
+  }
+  public function search(Request $request)
+  {
+    // 
+    $category = $request->input('category');
+    $categories = Category::all();
+    $search = $request->input('query');
+    $gamePosts = GamePost::where('categories_id', $category)->where('title', 'like', '%' . $search . '%')->paginate(9);
+
+    return view('gameBoard.gamePost', ['gamePosts' => $gamePosts, 'categories' => $categories]);
+  }
+
 
   /**
    * Show the form for creating a new resource.
@@ -27,8 +45,6 @@ class GameBoardController extends Controller
   {
     //
     $categories = Category::all();
-
-
     return view('gameBoard.createGamePost', ['categories' => $categories]);
   }
 
@@ -103,11 +119,11 @@ class GameBoardController extends Controller
       $post->img_path = $imagePath;
     }
 
-
     // 변경사항이 있는 경우에만 저장
     if ($post->isDirty()) {
       $post->save();
       // 변경사항이 있을 때의 추가적인 로직 수행
+      Session::flash('alert', '수정이 완료되었습니다.');
     }
     return redirect()->route('gameBoard.show', $id);
   }
@@ -130,7 +146,7 @@ class GameBoardController extends Controller
 
     // 게시물 삭제
     $gamePost->delete();
-
+    Session::flash('alert', '삭제가 완료되었습니다.');
     return redirect()->route('gameBoard.index');
   }
 }
